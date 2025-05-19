@@ -28,7 +28,7 @@ class AuthController extends \Illuminate\Routing\Controller
     $credentials = request()->only('email', 'password');
 
     try {
-      if (! $token = JWTAuth::attempt($credentials)) {
+      if (!$token = JWTAuth::attempt($credentials)) {
         return response()->json(['error' => 'Unauthorized'], 401);
       }
 
@@ -76,9 +76,9 @@ class AuthController extends \Illuminate\Routing\Controller
       'expires_in'   => auth()->factory()->getTTL() * 60,
     ]);
   }
+
   public function payload(): JsonResponse
   {
     return response()->json(auth()->payload());
   }
-
 }

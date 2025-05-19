@@ -13,7 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     health: '/up',
   )
   ->withMiddleware(function (Middleware $middleware) {
-//      $middleware->appendToGroup('api',JWTMiddleware::class,);
+//    $middleware->alias([
+//      'jwt.auth' => JWTMiddleware::class,
+//    ]);
+//    $middleware->api(append: [
+//      'jwt.auth',
+//    ]);
   })
   ->withExceptions(function (Exceptions $exceptions) {
     //
