@@ -6,6 +6,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends \Illuminate\Routing\Controller
 {
@@ -23,13 +25,30 @@ class AuthController extends \Illuminate\Routing\Controller
 
   public function login(): JsonResponse
   {
-    $credentials = request(['email', 'password']);
+    $credentials = request()->only('email', 'password');
 
-    if (!$token = auth()->attempt($credentials)) {
-      return response()->json(['error' => 'Unauthorized'], 401);
+    try {
+      if (! $token = JWTAuth::attempt($credentials)) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+      }
+
+      // Get the authenticated user.
+      $user = auth()->user();
+
+      // (optional) Attach the role to the token.
+      $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
+
+      return $this->respondWithToken($token);
+    } catch (JWTException $e) {
+      return response()->json(['error' => 'Could not create token'], 500);
     }
-
-    return $this->respondWithToken($token);
+//    $credentials = request(['email', 'password']);
+//
+//    if (!$token = auth()->attempt($credentials)) {
+//      return response()->json(['error' => 'Unauthorized'], 401);
+//    }
+//
+//    return $this->respondWithToken($token);
   }
 
   public function me(): JsonResponse
