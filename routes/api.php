@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 //use App\Http\Middleware\JWTMiddleware;
+use App\Http\Middleware\AuthenticateWebhookMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,3 +15,7 @@ Route::prefix('auth')->group(function () {
     Route::post('payload', [AuthController::class, 'payload']);
   });
 });
+
+Route::post('webhooks/test', function () {
+  return response()->json(['success' => true]);
+})->name('test')->middleware(AuthenticateWebhookMiddleware::class);
